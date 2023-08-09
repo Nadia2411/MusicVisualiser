@@ -28,15 +28,26 @@
   <div id="customizationControls">
     <label>Primary Color: <input type="color" id="primaryColor" value="#00FF00"></label>
     <label>Background Color: <input type="color" id="bgColor" value="#000000"></label>
+
+    <label>Bar Base Color: <input type="color" id="barBaseColor" value="#FF0000"></label>
+    <label>Bar Tip Color: <input type="color" id="barTipColor" value="#0000FF"></label>
     <label>Shape:
       <select id="shapeSelector">
         <option value="bars">Bars</option>
         <option value="circles">Circles</option>
         <option value="waves">Waves</option>
+        <option value="concentricCircles">Concentric Circles</option>
+        <option value="spiral">Spiral</option>
+        <option value="particles">Particles</option>
+
+
       </select>
     </label>
 
     <label>Bass Boost: <input type="range" id="bassBoost" min="1" max="3" step="0.1" value="1"></label>
+    <label>Bar Thickness: <input type="range" id="barThickness" min="1" max="50" step="1" value="10"></label>
+    <label>Bar Spacing: <input type="range" id="barSpacing" min="1" max="50" step="1" value="5"></label>
+
 
   </div>
 
