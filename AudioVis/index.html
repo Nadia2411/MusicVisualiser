@@ -70,25 +70,27 @@
 <body>
   <div
     style="background-color: black; padding: 10px; color: white; display: flex; justify-content: space-between; align-items: center;">
+    </label>
     <label style="display: inline-block; margin: 0 10px;">
       <select id="shapeSelector">
         <option value="bars">Bars</option>
         <option value="circles">Circles</option>
         <option value="waves">Waves</option>
-        <!-- <option value="particles">Particles</option>
-        <option value="kaleidoscope">Kaleidoscope</option>
+        <option value="particles">Particles</option>
+        <!-- <option value="kaleidoscope">Kaleidoscope</option>
         <option value="mandala">Mandala</option>
         <option value="wormhole">Wormhole</option>
         <option value="juliaSet">Julia Set</option>
         <option value="fractalFlames">FractalFlames</option> -->
       </select>
     </label>
-    <button disabled="" id="playButton" onclick="playMusic()"
-      style="order: 2; margin: 0 auto; text-align: center; flex: 0 0 auto; width: 30px; height: 30px;">▶</button>
-    <input accept="audio/*" id="musicUpload" style="display: none;" type="file" />
-    <span id="songNameDisplay"
-      style="order: 3; margin-right: 10px; flex: 1; text-align: right; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"></span>
-    <label for="musicUpload" style="
+    <label style="display: inline-block; margin: 0 10px;">
+      <button disabled="" id="playButton" onclick="playMusic()"
+        style="order: 2; margin: 0 auto; text-align: center; flex: 0 0 auto; width: 30px; height: 30px;">▶</button>
+      <input accept="audio/*" id="musicUpload" style="display: none;" type="file" />
+      <span id="songNameDisplay"
+        style="order: 3; margin-right: 10px; flex: 1; text-align: right; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;"></span>
+      <label for="musicUpload" style="
     order: 4;
     display: inline-block;
     background-color: #333;
@@ -102,6 +104,16 @@
     line-height: 20px;
     vertical-align: middle;
 ">+</label>
+  </div>
+
+  <div
+    style="background-color: black; padding: 10px; color: white; display: flex; justify-content: space-between; align-items: center;">
+    <span id="elapsedTime" style="margin-right: 10px;">0:00</span>
+    <div style="flex: 1; background-color: #444; height: 10px; position: relative; cursor: pointer;"
+      id="progressContainer">
+      <div style="height: 10px; background-color: #fff; width: 0%;" id="progressBar"></div>
+    </div>
+    <span id="remainingTime" style="margin-left: 10px;">0:00</span>
   </div>
   <div id="canvasContainer"></div>
   <script src="p5.js"></script>

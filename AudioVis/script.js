@@ -182,11 +182,11 @@ function draw() {
     case 'waves':
       drawWaves(spectrum);
       break;
+    case 'particles':
+      drawParticles();
+      break;
     // case 'kaleidoscope':
     //   drawKaleidoscope(spectrum);
-    //   break;
-    // case 'particles':
-    //   drawParticles(spectrum);
     //   break;
     // case 'fractalFlames':
     //   drawFractalFlames(spectrum);
@@ -248,3 +248,39 @@ document.getElementById('musicUpload').addEventListener('change', function () {
   var filename = this.value.split('\\').pop();
   document.getElementById('songNameDisplay').innerText = filename;
 });
+
+function updateProgressBar() {
+  if (song && song.isPlaying()) {
+    let currentTime = song.currentTime();
+    let duration = song.duration();
+    let progressPercentage = (currentTime / duration) * 100;
+
+    document.getElementById('progressBar').style.width =
+      progressPercentage + '%';
+    document.getElementById('elapsedTime').innerText = formatTime(currentTime);
+    document.getElementById('remainingTime').innerText = formatTime(
+      duration - currentTime
+    );
+  }
+}
+
+function formatTime(seconds) {
+  let min = Math.floor(seconds / 60);
+  let sec = Math.floor(seconds % 60);
+  return min + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+setInterval(updateProgressBar, 1000);
+
+document
+  .getElementById('progressContainer')
+  .addEventListener('click', function (event) {
+    if (song && song.buffer) {
+      let clickPosition = event.offsetX;
+      let containerWidth = this.offsetWidth;
+      let newProgressPercentage = clickPosition / containerWidth;
+      let newTime = song.duration() * newProgressPercentage;
+
+      song.jump(newTime);
+    }
+  });
