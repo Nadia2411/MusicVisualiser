@@ -182,8 +182,8 @@ function draw() {
     case 'waves':
       drawWaves(spectrum);
       break;
-    case 'particles':
-      drawParticles();
+    case 'particlesDance':
+      drawParticlesDance();
       break;
     // case 'kaleidoscope':
     //   drawKaleidoscope(spectrum);
