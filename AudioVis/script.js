@@ -182,8 +182,11 @@ function draw() {
     case 'waves':
       drawWaves(spectrum);
       break;
-    case 'particlesDance':
-      drawParticlesDance();
+    case 'particlesFall':
+      drawParticlesFall();
+      break;
+    case 'particlesEruption':
+      drawParticleEruptions();
       break;
     // case 'kaleidoscope':
     //   drawKaleidoscope(spectrum);
@@ -227,6 +230,120 @@ function drawWaves(spectrum) {
     vertex(x, y);
   }
   endShape();
+}
+
+class Particle {
+  constructor(x, y, radius, color) {
+    this.position = createVector(x, y);
+    this.velocity = createVector(0, 0);
+    this.acceleration = createVector(0, random(0.05, 0.2));
+    this.radius = radius;
+    this.color = color;
+  }
+
+  move() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+  }
+
+  show() {
+    fill(this.color);
+    noStroke();
+    ellipse(this.position.x, this.position.y, this.radius * 2);
+  }
+
+  offScreen() {
+    return this.position.y > height + 50;
+  }
+}
+
+let fallingParticles = [];
+
+function drawParticlesFall() {
+  // Get amplitude from p5's amplitude analyzer
+  let level = amplitude.getLevel();
+  let spectrum = fft.analyze();
+
+  // Create particles based on amplitude
+  if (random(1) < level) {
+    let particle = new Particle(
+      random(width),
+      0,
+      map(level, 0, 1, 5, 50),
+      visualiserColor
+    );
+    fallingParticles.push(particle);
+  }
+
+  // Move and render particles
+  for (let i = fallingParticles.length - 1; i >= 0; i--) {
+    fallingParticles[i].move();
+    fallingParticles[i].show();
+
+    // Remove off-screen particles
+    if (fallingParticles[i].offScreen()) {
+      fallingParticles.splice(i, 1);
+    }
+  }
+}
+
+class EruptionParticle {
+  constructor(x, y, color) {
+    this.position = createVector(x, y);
+    this.velocity = p5.Vector.random2D().mult(random(2, 7));
+    this.acceleration = createVector(0, 0);
+    this.lifeSpan = 600;
+    this.color = color;
+  }
+
+  move() {
+    this.velocity.add(this.acceleration);
+    this.position.add(this.velocity);
+    this.lifeSpan -= 2;
+  }
+
+  show() {
+    fill(red(this.color), green(this.color), blue(this.color), this.lifeSpan);
+    noStroke();
+    ellipse(this.position.x, this.position.y, 5);
+  }
+
+  isDead() {
+    return this.lifeSpan <= 0;
+  }
+}
+
+let eruptionParticles = [];
+let prevLevel = 0;
+const AMPLITUDE_THRESHOLD = 0.05;
+
+function drawParticleEruptions() {
+  // Get current amplitude level
+  let level = amplitude.getLevel();
+
+  // Detect a sudden spike in amplitude
+  if (level - prevLevel > AMPLITUDE_THRESHOLD) {
+    for (let i = 0; i < 100; i++) {
+      let particle = new EruptionParticle(
+        width / 2,
+        height / 2,
+        visualiserColor
+      );
+      eruptionParticles.push(particle);
+    }
+  }
+  prevLevel = level;
+
+  // Move and render eruption particles
+  for (let i = eruptionParticles.length - 1; i >= 0; i--) {
+    eruptionParticles[i].move();
+    eruptionParticles[i].show();
+
+    // Remove dead particles
+    if (eruptionParticles[i].isDead()) {
+      eruptionParticles.splice(i, 1);
+    }
+  }
 }
 
 document
