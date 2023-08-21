@@ -390,6 +390,25 @@ function drawMandalaPattern(spectrum, currentAmplitude, currentChroma) {
   for (let i = 0; i < numPoints; i++) {
     let angle = angleOffset * i;
     let radius = rMax * (spectrum[i] / 255.0);
+
+    let averageSpectrum = spectrum.reduce((a, b) => a + b, 0) / spectrum.length;
+    let threshold = 0.7; // Threshold for detecting significant peaks
+    let peakDetection = spectrum[index] > 255 * threshold;
+    let dynamicMinRadius;
+    if (peakDetection) {
+      dynamicMinRadius = rMax * 0.01; // Allow closer center meeting for transients
+    } else {
+      dynamicMinRadius = map(averageSpectrum, 0, 255, rMax * 0.05, rMax * 0.15); // Adjusted regular dynamic radius
+    }
+    let smoothingFactor = 0.2; // Reduced smoothing factor for slower transition
+    if (i < numPoints * smoothingFactor) {
+      radius = lerp(
+        dynamicMinRadius,
+        radius,
+        i / (numPoints * smoothingFactor)
+      );
+    }
+
     let x = radius * cos(angle);
     let y = radius * sin(angle);
     vertex(x, y);
