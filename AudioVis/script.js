@@ -177,7 +177,7 @@ function draw() {
       drawBars(spectrum);
       break;
     case 'circles':
-      drawCircles(spectrum);
+      drawCircularWaveform(spectrum);
       break;
     case 'waves':
       drawWaves(spectrum);
@@ -188,21 +188,9 @@ function draw() {
     case 'particlesEruption':
       drawParticleEruptions();
       break;
-    // case 'kaleidoscope':
-    //   drawKaleidoscope(spectrum);
-    //   break;
-    // case 'fractalFlames':
-    //   drawFractalFlames(spectrum);
-    //   break;
-    // case 'mandala':
-    //   drawMandala(spectrum);
-    //   break;
-    // case 'wormhole':
-    //   drawWormhole(spectrum);
-    //   break;
-    // case 'juliaSet':
-    //   drawJuliaSet(spectrum);
-    //   break;
+    case 'mandala':
+      drawMandala(spectrum);
+      break;
   }
 }
 
@@ -214,10 +202,30 @@ function drawBars(spectrum) {
   }
 }
 
-function drawCircles(spectrum) {
+function drawCircularWaveform() {
+  let waveformData = fft.waveform();
+
+  // Average the first and last points for a seamless connection
+  let avgValue = (waveformData[0] + waveformData[waveformData.length - 1]) / 2;
+  waveformData[0] = avgValue;
+  waveformData[waveformData.length - 1] = avgValue;
+
+  // Filling the waveform with the mood color
   fill(visualiserColor);
-  let r = map(spectrum[0], 0, 255, 10, width / 4);
-  ellipse(width / 2, height / 2, r);
+  beginShape();
+  for (let i = 0; i < waveformData.length; i++) {
+    // Calculate the angle and radius for each point with an offset to start from the correct south point
+    let angle = map(i, 0, waveformData.length, 0.5 * PI, 2.5 * PI);
+
+    // Adjusted size of the circle
+    let rad = map(waveformData[i], -1, 1, width / 6, width / 4);
+
+    // Convert polar coordinates to Cartesian coordinates
+    let x = width / 2 + rad * cos(angle);
+    let y = height / 2 + rad * sin(angle);
+    vertex(x, y);
+  }
+  endShape(CLOSE);
 }
 
 function drawWaves(spectrum) {
@@ -344,6 +352,49 @@ function drawParticleEruptions() {
       eruptionParticles.splice(i, 1);
     }
   }
+}
+
+function drawMandala(spectrum) {
+  let currentAmplitude = amplitude.getLevel();
+  let numSegments = map(currentAmplitude, 0, 1, 6, 12);
+  let angleOffset = TWO_PI / numSegments;
+  let currentChroma;
+  if (meydaAnalyzer) {
+    currentChroma = meydaAnalyzer.get('chroma');
+  }
+
+  push();
+  translate(width / 2, height / 2);
+  for (let i = 0; i < numSegments; i++) {
+    push();
+    rotate(angleOffset * i);
+    drawMandalaPattern(spectrum, currentAmplitude, currentChroma);
+    scale(1, -1); // Mirror the segment vertically
+    drawMandalaPattern(spectrum, currentAmplitude, currentChroma);
+    pop();
+  }
+  pop();
+}
+
+function drawMandalaPattern(spectrum, currentAmplitude, currentChroma) {
+  noFill();
+  let rMax = min(windowWidth, windowHeight) / 2.5;
+  let index = floor(map(currentAmplitude, 0, 1, 0, spectrum.length - 1));
+  let size = map(spectrum[index], 0, 255, 5, 25);
+  let moodColor = mapAmplitudeToColor(currentAmplitude, currentChroma);
+  let clr = color(moodColor.r, moodColor.g, moodColor.b);
+  stroke(clr);
+  let numPoints = map(spectrum[index], 0, 255, 6, 24);
+  let angleOffset = TWO_PI / numPoints;
+  beginShape();
+  for (let i = 0; i < numPoints; i++) {
+    let angle = angleOffset * i;
+    let radius = rMax * (spectrum[i] / 255.0);
+    let x = radius * cos(angle);
+    let y = radius * sin(angle);
+    vertex(x, y);
+  }
+  endShape(CLOSE);
 }
 
 document
