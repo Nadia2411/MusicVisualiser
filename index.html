@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>
+    Live Computer Generated Visuals Based on Sound Waves of Music
+  </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    canvas {
+      border: none;
+      display: block;
+      margin: 20px auto;
+    }
+
+    canvas {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body>div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body,
+    html,
+    div {
+      margin: 0;
+      padding: 0;
+    }
+
+    body>div {
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+
+    #canvasContainer {
+      margin: 0;
+      padding: 0;
+    }
+
+    #canvasContainer,
+    canvas {
+      margin: 0;
+      padding: 0;
+      position: relative;
+      display: block;
+    }
+  </style>
+</head>
+
+<body style="background-color: black;">
+  <div
+    style="background-color: black; padding: 10px; color: white; display: flex; justify-content: space-between; align-items: center;">
+  </div>
+</body>
+
+</html>
+<label style="display: inline-block; margin: 0 10px;">
+  <select id="shapeSelector"
+    style="background-color: black; color: grey; border: none; position: absolute; top: 20px; left: 10px; line-height: 30px; height: 30px;">
+    <option value="waves">
+      Simple Waveform
+    </option>
+    <option value="particlesFall">
+      Falling Orbs
+    </option>
+    <option value="mandala">
+      Mandala
+    </option>
+    <option value="smokeyFlow">
+      Flow Field
+    </option>
+    <option value="cCMandala">
+      Concentric Circle Mandala
+    </option>
+  </select>
+</label>
+<label style="display: inline-block; margin: 0 10px;">
+  <button disabled="" id="playButton" onclick="playMusic()"
+    style="order: 2; margin: 0 auto; text-align: center; flex: 0 0 auto; width: 30px; height: 30px; position: absolute; top: 20px; left: 50%; transform: translateX(-50%);">
+    ▶
+  </button>
+  <input accept="audio/*" id="musicUpload" style="display: none;" type="file" />
+  <span id="songNameDisplay"
+    style="color: white; position: absolute; top: 20px; right: 80px; text-align: right; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; line-height: 30px;">
+  </span>
+  <label for="musicUpload"
+    style="order: 4; display: inline-block; background-color: #333; padding: 5px 10px; border-radius: 50%; color: white; cursor: pointer; text-align: center; width: 30px; height: 30px; line-height: 20px; vertical-align: middle; position: absolute; top: 20px; right: 10px;">
+    +
+  </label>
+</label>
+<div
+  style="background-color: black; padding: 10px; color: white; display: flex; justify-content: space-between; align-items: center;">
+  <span id="elapsedTime" style="margin-right: 10px; margin-top: 25px;">
+    0:00
+  </span>
+  <div id="progressContainer"
+    style="flex: 1; background-color: #444; height: 10px; position: relative; cursor: pointer; margin-top: 40px; margin-top: 25px;">
+    <div id="progressBar" style="height: 10px; background-color: #fff; width: 0%;">
+    </div>
+  </div>
+  <span id="remainingTime" style="margin-left: 10px; margin-top: 25px;">
+    0:00
+  </span>
+</div>
+<div id="canvasContainer">
+</div>
+<script src="p5.js">
+</script>
+<script src="p5.sound.js">
+</script>
+<script src="meyda.js">
+</script>
+<script src="chroma.js">
+</script>
+<script src="script.js">
+</script>
