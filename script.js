@@ -6,7 +6,7 @@ let visualiserColor;
 let backgroundColor = '#000000';
 let buffer;
 let isMusicPlaying = false;
-let worker = new Worker('smokeyWorker.js');
+let worker = new Worker('flowWorker.js');
 let particleBuffer;
 let meydaAnalyzer;
 let currentColor = { r: 255, g: 255, b: 255 };
@@ -31,7 +31,7 @@ function setup() {
   noLoop();
   document.getElementById('playButton').disabled = true;
   background(backgroundColor);
-  setupSmokeyFlow();
+  setupFlow();
   particleBuffer = createGraphics(width, height);
   particleBuffer.blendMode(ADD);
 }
@@ -166,18 +166,18 @@ function draw() {
   let spectrum = fft.analyze();
   let shape = document.getElementById('shapeSelector').value;
   switch (shape) {
-    case 'waves':
-      drawWaves(spectrum);
+    case 'simpleWaveform':
+      drawWaveform(spectrum);
       break;
-    case 'particlesFall':
-      drawParticlesFall();
+    case 'orbsFall':
+      drawOrbsFall();
       break;
     case 'mandala':
       drawMandala(spectrum);
       break;
-    case 'smokeyFlow':
+    case 'flowField':
       if (isMusicPlaying) {
-        drawSmokeyFlow();
+        drawFlow();
       }
       break;
     case 'cCMandala':
@@ -186,9 +186,9 @@ function draw() {
   }
 }
 
-//////////////////////////////////////////////////////WAVES////////////////////////////////////////////////////////
+////////////////////////////////////////////// Simple Waveform /////////////////////////////////////////////////////
 
-function drawWaves(spectrum) {
+function drawWaveform(spectrum) {
   if (!isMusicPlaying) return;
   let waveformData = fft.waveform();
   noFill();
@@ -204,9 +204,9 @@ function drawWaves(spectrum) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////// FALLING ORBS ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-let fallingParticles = [];
+let fallingOrbs = [];
 
-class Particle {
+class Orb {
   constructor(x, y, radius, color) {
     this.position = createVector(x, y);
     this.velocity = createVector(0, 0);
@@ -252,23 +252,23 @@ class Particle {
   }
 }
 
-function drawParticlesFall() {
+function drawOrbsFall() {
   particleBuffer.background(0, 0, 0, 25);
 
   let level = amplitude.getLevel();
 
   if (random(1) < level) {
     let size = map(level, 0, 1, 5, 50);
-    let particle = new Particle(random(width), -size, size, visualiserColor);
-    fallingParticles.push(particle);
+    let orb = new Orb(random(width), -size, size, visualiserColor);
+    fallingOrbs.push(orb);
   }
 
-  for (let i = fallingParticles.length - 1; i >= 0; i--) {
-    fallingParticles[i].move();
-    fallingParticles[i].show();
+  for (let i = fallingOrbs.length - 1; i >= 0; i--) {
+    fallingOrbs[i].move();
+    fallingOrbs[i].show();
 
-    if (fallingParticles[i].offScreen()) {
-      fallingParticles.splice(i, 1);
+    if (fallingOrbs[i].offScreen()) {
+      fallingOrbs.splice(i, 1);
     }
   }
 
@@ -349,10 +349,10 @@ const NUM_PARTICLES = 50;
 const MAX_COLOR_HISTORY = 50;
 let colorHistory = [];
 let offscreenGraphics;
-let smokeyParticles = [];
+let flowParticles = [];
 let flowField;
 
-class SmokeParticle {
+class FlowParticle {
   constructor(x, y) {
     this.pos = createVector(x, y);
     this.prevPos = this.pos.copy();
@@ -468,19 +468,19 @@ class FlowField {
   }
 }
 
-function setupSmokeyFlow() {
+function setupFlow() {
   colorMode(HSL);
   flowField = new FlowField(15);
   for (let i = 0; i < NUM_PARTICLES; i++) {
     let x = random(width);
     let y = random(height);
-    smokeyParticles.push(new SmokeParticle(x, y));
+    flowParticles.push(new FlowParticle(x, y));
   }
 
   offscreenGraphics = createGraphics(width, height);
 }
 
-function drawSmokeyFlow() {
+function drawFlow() {
   if (!isMusicPlaying) return;
 
   offscreenGraphics.blendMode(BLEND);
@@ -491,7 +491,7 @@ function drawSmokeyFlow() {
   if (flowField) {
     flowField.update();
 
-    smokeyParticles.forEach((particle) => {
+    flowParticles.forEach((particle) => {
       particle.move(flowField.lookup(particle.pos));
       particle.show();
       particle.wrap();
@@ -501,8 +501,9 @@ function drawSmokeyFlow() {
   image(offscreenGraphics, 0, 0);
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////// CONCENTRIC CIRCLES ////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function drawCCMandala(spectrum) {
   let currentAmplitude = amplitude.getLevel();
@@ -553,6 +554,8 @@ function drawMandalaSegment(spectrum, currentAmplitude, currentChroma) {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 document
   .getElementById('musicUpload')
   .addEventListener('change', function (event) {
@@ -560,8 +563,8 @@ document
       song.stop();
     }
 
-    smokeyParticles = [];
-    setupSmokeyFlow();
+    flowParticles = [];
+    setupFlow();
 
     song = loadSound(URL.createObjectURL(event.target.files[0]), function () {
       document.getElementById('playButton').disabled = false;
@@ -616,7 +619,7 @@ document
       particleBuffer.background(backgroundColor);
 
       fallingParticles = [];
-      smokeyParticles.forEach((particle) => {
+      flowParticles.forEach((particle) => {
         particle.history = [];
         particle.colorHistory = [];
         particle.pos = createVector(random(width), random(height));
