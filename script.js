@@ -346,7 +346,7 @@ function drawMandalaPattern(spectrum, currentAmplitude, currentChroma) {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const NUM_PARTICLES = 50;
-const MAX_COLOR_HISTORY = 50;
+const MAX_COLOR_HISTORY = 200;
 let colorHistory = [];
 let offscreenGraphics;
 let flowParticles = [];
